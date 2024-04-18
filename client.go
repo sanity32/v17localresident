@@ -4,10 +4,15 @@ import (
 	"image"
 	"net"
 	"net/rpc"
+	"time"
 )
 
-func ConnectClient(addr string) (Client, error) {
-	r := Client{addr: addr}
+func NewClient(addr string) *Client {
+	return &Client{addr: addr}
+}
+
+func ConnectClient(addr string) (*Client, error) {
+	r := NewClient(addr)
 	return r, r.Connect()
 }
 
@@ -25,6 +30,18 @@ func (cl *Client) Connect() error {
 	cl.client = rpc.NewClient(conn)
 	cl.connected = true
 	return nil
+}
+
+func (cl *Client) ConnectN(n int, timeout time.Duration) (err error) {
+	for i := 0; i < n; i++ {
+		if i != 0 {
+			time.Sleep(timeout)
+		}
+		if err = cl.Connect(); err == nil {
+			break
+		}
+	}
+	return err
 }
 
 func (cl *Client) init() error {

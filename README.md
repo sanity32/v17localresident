@@ -1,1 +1,1 @@
-"# v17localresident" 
+# v17localresident
